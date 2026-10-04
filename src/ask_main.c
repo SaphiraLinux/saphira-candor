@@ -1,4 +1,4 @@
-/* ask_main.c -- the whole CLI of scjev. There is deliberately almost nothing here:
+/* ask_main.c -- the whole CLI of scandor. There is deliberately almost nothing here:
  * ask questions against the COMPILED-IN model and witness set. No train, no eval,
  * no bandit, no file loading: every byte this program reads was linked into it.
  * `--about` prints the baked provenance (content hash, model hash, versions) so any
@@ -24,7 +24,7 @@ static int arg_eq(const char *a, const char *b) { return strcmp(a, b) == 0; }
 static void usage(const char *prog) {
     fprintf(stderr,
         "usage: %s --context T [--question T] --candidate A [--candidate B ...]\n"
-        "           [--head forward|inverse|both] [--json] [--about]\n"
+        "           [--head forward|inverse|both] [--json] [--about] [--version]\n"
         "  answers from exact witnessed facts first (REMEMBERED + source, no forward\n"
         "  pass); anything else runs the compiled-in vector forward pass, marked\n"
         "  GUESSED. --about prints baked provenance. No files are read, ever.\n", prog);
@@ -42,6 +42,11 @@ int main(int argc, char **argv) {
         const char *a = argv[i];
         const char *v = (i + 1 < argc) ? argv[i + 1] : NULL;
         if (arg_eq(a, "--about")) { printf("%s\n", CANDOR_ABOUT); return 0; }
+        else if (arg_eq(a, "--version")) {
+            printf("scandor %s (sealed ask-only; container CDR1 v1-v5)\n",
+                   CANDOR_VERSION);
+            return 0;
+        }
         else if (arg_eq(a, "--help") || arg_eq(a, "-h")) { usage(argv[0]); return 0; }
         else if (arg_eq(a, "--context") && v) { context = v; i++; }
         else if (arg_eq(a, "--question") && v) { question = v; i++; }

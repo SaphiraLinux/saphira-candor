@@ -27,6 +27,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/* product version, printed by both CLIs (--version) */
+#define CANDOR_VERSION "1.0.0"
+
 /* per-example option cap; a row with more options is a hard error, never truncated */
 #define CD_MAX_OPT 64
 

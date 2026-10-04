@@ -47,7 +47,7 @@ static void usage(void) {
 "  candor --help | --version | --about [--model F] [--witness F]\n");
 }
 
-#define CANDOR_VERSION "1.0.0"
+/* CANDOR_VERSION lives in candor.h (shared by both CLIs). */
 
 /* ---- minimal SHA-256 (FIPS 180-4), for --about file hashing ---- */
 typedef struct { uint32_t h[8]; uint64_t len; unsigned char buf[64]; size_t n; } cd_sha256_t;

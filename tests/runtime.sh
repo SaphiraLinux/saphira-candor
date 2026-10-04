@@ -54,7 +54,9 @@ echo "== CLI contract =="
     && ok "candor --help exit 0" || bad "candor --help exit 0"
 "$ROOT/candor" --version 2>&1 | grep -q "^candor " \
     && ok "candor --version" || bad "candor --version"
-"$ROOT/scandor" --version 2>&1 | grep -q . \
+"$ROOT/scandor" --version >/dev/null 2>&1; [ $? -eq 0 ] \
+    && ok "scandor --version exit 0" || bad "scandor --version exit 0"
+"$ROOT/scandor" --version 2>&1 | grep -q "^scandor " \
     && ok "scandor --version" || bad "scandor --version"
 "$ROOT/scandor" --about 2>&1 | grep -q "model_sha256=a439b6962b9bd8e2b3800424a13f1726f662fac5a5029eb7c6875734e6eee5da" \
     && ok "scandor --about baked model hash" || bad "scandor --about baked model hash"
