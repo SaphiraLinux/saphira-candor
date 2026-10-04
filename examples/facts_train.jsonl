@@ -1,0 +1,6 @@
+{"context": "Note: the harbor heron is swift. What is true of the harbor heron?", "options": ["swift", "louder", "darker", "rougher"], "label": 0, "entity": "harbor heron", "fact": "swift"}
+{"context": "Note: the harbor heron is swift. What is true of the harbor heron?", "options": ["louder", "swift", "smoother", "duller"], "label": 1, "entity": "harbor heron", "fact": "swift"}
+{"context": "Note: the harbor heron is silent. What is true of the harbor heron?", "options": ["silent", "louder", "rougher", "faster"], "label": 0, "entity": "harbor heron", "fact": "silent"}
+{"context": "Note: the harbor heron is silent. What is true of the harbor heron?", "options": ["duller", "darker", "silent", "smoother"], "label": 2, "entity": "harbor heron", "fact": "silent"}
+{"context": "Note: the kelp wren is keen. What is true of the kelp wren?", "options": ["keen", "louder", "duller", "rougher"], "label": 0, "entity": "kelp wren", "fact": "keen"}
+{"context": "Note: the kelp wren is nimble. What is true of the kelp wren?", "options": ["louder", "nimble", "rougher", "duller"], "label": 1, "entity": "kelp wren", "fact": "nimble"}

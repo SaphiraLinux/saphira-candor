@@ -1,0 +1,12 @@
+SJEV — notice
+
+Copyright (C) 2026 Andrew Smalley for and on behalf of AKADATA LIMITED.
+
+SJEV is an independently authored C implementation informed by the
+TinyScorer architecture demonstrated by the Jevlike research project.
+No Jevlike source code is included in this distribution. Jevlike is
+© 2026 Minimal Labs and is distributed separately under the MIT License
+(https://github.com/vinnylarouge/jevlike).
+
+The SJEV source in this distribution is licensed under the Business
+Source License 1.1 — see LICENSE.

@@ -1,0 +1,118 @@
+.TH CANDOR 1 "Saphira Candor" "Saphira Candor" "User Commands"
+.SH NAME
+candor \- answer questions from witnessed facts first, neural guesses marked
+.SH SYNOPSIS
+.B candor ask --model
+.I F
+.B --witness
+.I F
+.B --context
+.I T
+.RB [ --question
+.IR T ]
+.B --candidate
+.I A
+.RB [ --candidate
+.IR B ...]
+.RB [ --head
+.IR forward | inverse | both ]
+.RB [ --json ]
+.br
+.B candor train --data
+.I F
+.B --val
+.I F
+.B --out
+.I F
+.RB [ --epochs
+.IR n ]
+.RB [ --seed
+.IR n ]
+.RB [ --n-opt
+.IR n ]
+.RB [ --init-model
+.IR F ]
+.RB [ --q2 | --q3 | --q4 | --q8 ]
+.br
+.B candor --help | --version
+.br
+.B candor --about
+.RB [ --model
+.IR F ]
+.RB [ --witness
+.IR F ]
+.SH DESCRIPTION
+\fBcandor\fR is the full Candor engine: an external model plus external
+witnessed memory, with training included. It answers from exact witnessed
+facts first and says so; anything else runs the neural forward pass, marked
+as a guess. Retraining is an ordinary command, not a separate product.
+.SH COMMANDS
+.TP
+.B ask
+Answer one question. Requires \fB--model\fR, \fB--context\fR, and at least one
+\fB--candidate\fR. \fB--witness\fR enables the fact-first path; without it
+every answer comes from the forward pass.
+.TP
+.B train
+Teach witnessed facts: \fB--data\fR rows (context/options/label, plus
+\fBentity\fR+\fBfact\fR keys to register memories), validated against
+\fB--val\fR, written to \fB--out\fR. The best-validation checkpoint is kept
+automatically. \fB--init-model\fR continues from an existing checkpoint
+instead of from scratch. \fB--q2|--q3|--q4|--q8\fR store smaller
+quantized checkpoints (storage only; compute stays float32).
+See TRAINING.md for the full discipline: how, why, when, and when not to.
+.SH VERDICTS
+Every answer carries exactly one verdict:
+.TP
+.B REMEMBERED
+Exactly one candidate matches a witnessed (entity, property) fact. The source
+statement is printed and the neural forward pass is skipped entirely.
+.TP
+.B GUESSED
+No exact fact answered. The forward pass runs and its scores/probabilities are
+reported, marked as a guess. A guess is never presented as a memory.
+.PP
+Absence is never a denial: an unwitnessed candidate is reported as not in
+memory, never as false.
+.SH OPTIONS
+.TP
+.BR --model " F"
+Model checkpoint file (SNE1 container, v1-v5).
+.TP
+.BR --witness " F"
+Witnessed-fact JSONL (rows carrying \fBentity\fR + \fBfact\fR keys).
+.TP
+.BR --context " T" ", " --question " T"
+Question text. The entity is resolved from the context against known witnesses.
+.TP
+.BR --candidate " A"
+One answer option; repeatable, up to 64.
+.TP
+.BR --head " forward|inverse|both"
+Which judgement head answers (default forward).
+.TP
+.B --json
+Machine-readable output: \fB{"verdict": "remembered"|"guessed", ...}\fR.
+.TP
+.BR --version ", " --about
+\fB--version\fR prints the engine version. \fB--about\fR prints engine
+provenance, plus sha256 of any \fB--model\fR/\fB--witness\fR files supplied.
+.SH EXIT STATUS
+.TP
+.B 0
+Answered (either verdict).
+.TP
+.B 1
+Runtime failure (unreadable model, corrupt container, no forward possible).
+.TP
+.B 2
+Usage error.
+.SH EXAMPLES
+.PP
+.nf
+candor ask --model models/model.q8 --witness witnesses/witness.jsonl \\
+  --context "What is true of the tract0007 pipit?" \\
+  --candidate alert --candidate louder
+.fi
+.SH SEE ALSO
+.BR scandor (1)

@@ -1,0 +1,2 @@
+{"context": "Note: the harbor heron is swift. What is true of the harbor heron?", "options": ["faster", "louder", "swift", "rougher"], "label": 2, "entity": "harbor heron", "fact": "swift"}
+{"context": "Note: the kelp wren is keen. What is true of the kelp wren?", "options": ["duller", "keen", "louder", "smoother"], "label": 1, "entity": "kelp wren", "fact": "keen"}

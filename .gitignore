@@ -1,0 +1,7 @@
+build/
+bin/
+*.o
+*.bin
+__pycache__/
+/candor
+/scandor

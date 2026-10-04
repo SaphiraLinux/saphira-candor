@@ -1,0 +1,76 @@
+.TH SCANDOR 1 "Saphira Candor" "Saphira Candor" "User Commands"
+.SH NAME
+scandor \- Self-Contained Candor; the Candor engine sealed into one executable
+.SH SYNOPSIS
+.B scandor --context
+.I T
+.RB [ --question
+.IR T ]
+.B --candidate
+.I A
+.RB [ --candidate
+.IR B ...]
+.RB [ --head
+.IR forward|inverse|both ]
+.RB [ --json ]
+.br
+.B scandor --help | --version | --about
+.SH DESCRIPTION
+\fBscandor\fR is Candor with its model and witnessed facts compiled into the
+executable itself. It opens no model file, no data file, no witness file:
+copy the binary anywhere -- an empty directory, a floppy -- and it answers
+identically. Same engine and same verdict discipline as \fBcandor\fR(1);
+the only difference is where the bytes come from.
+.SH VERDICTS
+Every answer carries exactly one verdict:
+.TP
+.B REMEMBERED
+Exactly one candidate matches a baked witnessed (entity, property) fact. The
+source statement is printed and the neural forward pass is skipped entirely.
+.TP
+.B GUESSED
+No baked fact answered. The compiled-in forward pass runs and its
+scores/probabilities are reported, marked as a guess. A guess is never
+presented as a memory.
+.PP
+Absence is never a denial: an unwitnessed candidate is reported as not in
+memory, never as false.
+.SH OPTIONS
+.TP
+.BR --context " T" ", " --question " T"
+Question text. The entity is resolved from the context against baked witnesses.
+.TP
+.BR --candidate " A"
+One answer option; repeatable, up to 64.
+.TP
+.BR --head " forward|inverse|both"
+Which judgement head answers (default forward).
+.TP
+.B --json
+Machine-readable output: \fB{"verdict": "remembered"|"guessed", ...}\fR.
+.TP
+.BR --version ", " --about
+\fB--version\fR prints the product version. \fB--about\fR prints the baked
+provenance: model and witness sha256, row counts, container version --
+auditing any binary back to its exact training.
+.SH EXIT STATUS
+.TP
+.B 0
+Answered (either verdict).
+.TP
+.B 1
+Runtime failure (embedded content unreadable: a build defect, never user data).
+.TP
+.B 2
+Usage error.
+.SH EXAMPLES
+.PP
+.nf
+scandor --context "What is true of the tract0007 pipit?" \\
+  --candidate alert --candidate louder
+scandor --about
+.fi
+.SH FILES
+None. This binary reads no files at runtime.
+.SH SEE ALSO
+.BR candor (1)
