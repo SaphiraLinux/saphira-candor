@@ -11,7 +11,7 @@
 #   scandor = ask-only engine (uses the extracted copies; no train objects)
 CC ?= cc
 CFLAGS = -O2 -std=c11 -Wall -Wextra -Wpedantic -fno-fast-math -ffp-contract=off \
-         -march=x86-64-v3 -Isrc -Ibuild
+         -march=x86-64-v3 -Isrc -Ibuild -MMD -MP
 LDFLAGS = -static
 LDLIBS = -lm
 
@@ -20,12 +20,22 @@ ENGINE_ASK = build/cd_model.o build/cd_data.o build/cd_simd.o build/cd_fact.o \
 ENGINE_FULL = build/cd_model.o build/cd_data.o build/cd_simd.o build/cd_fact.o \
               build/cd_train.o build/cd_bandit.o
 
+# Coarse header tracking on purpose: every object rebuilds when any header it
+# includes changes, because a struct change that leaves a stale object is a
+# silent truncation, not a build error. The .d files are make state, not
+# sources (build/ is untracked). NOTE: this block must stay AFTER the ENGINE
+# lists above: -include expands where it stands, and anything it cannot see
+# yet is silently untracked (that exact ordering bug shipped once).
+DEPS = $(ENGINE_ASK:.o=.d) $(ENGINE_FULL:.o=.d) \
+       build/candor_main.d build/ask_main.d build/model_blob.d build/witness_blob.d
+-include $(DEPS)
+
 # Pinned proven content. The build hash-checks these before baking; the commit
 # identifies the engine AND its education/memory.
 MODEL_SHA256 = a439b6962b9bd8e2b3800424a13f1726f662fac5a5029eb7c6875734e6eee5da
 WITNESS_SHA256 = 8b62d00ad71daf68dc65078748c01a32a54f5629190482717494e5d8d0221b21
 
-.PHONY: all candor scandor test install clean
+.PHONY: all candor scandor test check install clean
 all: candor scandor
 
 build/%.o: src/%.c
@@ -37,10 +47,7 @@ build/ask_main.o: src/ask_main.c build/about.h
 	mkdir -p build
 	$(CC) $(CFLAGS) -c $< -o $@
 
-candor: ./candor
-scandor: ./scandor
-
-./candor: $(ENGINE_FULL) build/candor_main.o
+candor: $(ENGINE_FULL) build/candor_main.o
 	$(CC) $(CFLAGS) -o $@ $(ENGINE_FULL) build/candor_main.o \
 	    $(LDFLAGS) $(LDLIBS)
 	ls -la $@
@@ -55,13 +62,17 @@ build/model_blob.o build/witness_blob.o: build/model_blob.c build/witness_blob.c
 	$(CC) $(CFLAGS) -c build/model_blob.c -o build/model_blob.o
 	$(CC) $(CFLAGS) -c build/witness_blob.c -o build/witness_blob.o
 
-./scandor: $(ENGINE_ASK) build/ask_main.o build/model_blob.o build/witness_blob.o
+scandor: $(ENGINE_ASK) build/ask_main.o build/model_blob.o build/witness_blob.o
 	$(CC) $(CFLAGS) -o $@ $(ENGINE_ASK) build/ask_main.o \
 	    build/model_blob.o build/witness_blob.o $(LDFLAGS) $(LDLIBS)
 	ls -la $@
 
 test: all
 	sh tests/runtime.sh
+
+# check is the single entry point the skill vocabulary expects: build, then
+# the full suite. A change is not done until `make check` passes.
+check: test
 
 PREFIX ?= /usr/local
 install: all
